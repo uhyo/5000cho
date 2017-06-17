@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "5000兆単位系コンバータ",
-  "version": "1.0",
+  "version": "1.1.0",
   "description": "右クリックメニューから単位付き数値を5000兆単位系に変換します。",
   "author": "uhyo",
   "icons": {
