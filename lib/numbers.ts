@@ -30,15 +30,26 @@ export function getNumbers(text: string): Array<PositionedNumber>{
 
         const expj = jprefixToExp(jpprefix);
 
-        const exp = expj + (unit ? prefixToExp(prefix) : 0);
+        let prefix2;
+        let unit2;
+        if (prefix && !unit && /^(?:[mgsAKLtBbJ]|mol|cd|rad|cal|5000兆)$/.test(prefix)){
+            // prefixだけどunitとみなそう
+            prefix2 = '';
+            unit2 = prefix;
+        }else{
+            prefix2 = prefix;
+            unit2 = unit;
+        }
+
+        const exp = expj + (unit2 ? prefixToExp(prefix2) : 0);
 
         result.push({
             position: index,
-            length: all.length - (unit ? unit.length : (prefix ? prefix.length : 0)),
+            length: all.length - (unit2 ? unit2.length : (prefix2 ? prefix2.length : 0)),
             precision,
             num,
             exp,
-            hasunit: !!unit,
+            hasunit: !!unit2,
         });
     }
     return result;
@@ -272,7 +283,6 @@ export function expToPrefix(exp: number): string{
  */
 export function usePrecision(num: number, precision: number): string{
     const offset = Math.log10(num);
-    console.log(num, offset);
 
     if (offset < 0){
         // 0.xyz...の形
