@@ -27,9 +27,7 @@ for (let i = 0; i < selection.rangeCount; i++){
         text,
         nodes,
     } = traverse(r);
-    console.log(text, nodes);
     const numbers = getNumbers(text);
-    console.log(numbers);
 
     for (const numb of numbers){
         const {
@@ -80,7 +78,6 @@ if (activeElement != null && (activeElement.tagName === 'INPUT' || activeElement
             position,
             length,
         } = num;
-        console.log(normalize(convert(num)));
         if (cur < position){
             result += v.substring(cur, position);
             cur = position;

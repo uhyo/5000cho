@@ -18,7 +18,6 @@ export function getNumbers(text: string): Array<PositionedNumber>{
     let ret: RegExpExecArray | null = null;
     const result: Array<PositionedNumber> = [];
     while (ret = reg.exec(text)){
-        console.log(ret);
         const [all, numstr1, jpprefix, prefix, unit] = ret;
         const numstr = numstr1.replace(/\s/g, '');
         const precision = getPrecision(numstr);
