@@ -14,7 +14,7 @@ export interface PositionedNumber extends PrecisionNumber{
  * Find all numbers with unit.
  */
 export function getNumbers(text: string): Array<PositionedNumber>{
-    const reg = /(\d[\d\s]*(?:\.[\s\d]+)?)\s*([京兆億万千百])?\s*([YZEPTGMkh]|da|[dcmu\u00b5npfazy])?([mgsAKLtBb]|mol|cd|rad)?/g;
+    const reg = /(\d[\d\s]*(?:\.[\s\d]+)?)\s*([京兆億万千百])?\s*([YZEPTGMkh]|da|[dcmu\u00b5npfazy])?([mgsAKLtBbJ]|mol|cd|rad|cal)?/g;
     let ret: RegExpExecArray | null = null;
     const result: Array<PositionedNumber> = [];
     while (ret = reg.exec(text)){
@@ -73,6 +73,14 @@ export function normalize({
     exp,
     hasunit,
 }: PrecisionNumber): PrecisionNumber{
+    if (num === 0){
+        return {
+            num,
+            precision,
+            exp,
+            hasunit,
+        };
+    }
     // x.pqr..
     const nu = Math.floor(Math.log10(num));
     // log10が0になるように
@@ -95,6 +103,20 @@ export function toHTML({
     exp,
 }: PrecisionNumber): Node{
     const result = document.createDocumentFragment();
+
+    if (num === 0){
+        // 0だ
+        result.appendChild(document.createTextNode('0'));
+        return result;
+    }
+    if (-1 <= exp && exp <= 1){
+        // 指数表記を使わない
+        const num2 = num * Math.pow(10, exp);
+        const numstr = num2.toFixed(Math.max(0, precision-1));
+        const text = num2 === 1 ? '5000兆' : `${numstr}\u00a05000兆`;
+        result.appendChild(document.createTextNode(text));
+        return result;
+    }
 
     const numstr = num.toFixed(Math.max(0, precision-1));
     const text1 = `${numstr}\u00a0×\u00a010`;
