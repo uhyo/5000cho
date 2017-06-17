@@ -18,6 +18,9 @@ for (let i = 0; i < selection.rangeCount; i++){
     if (range == null){
         continue;
     }
+    if (range.collapsed){
+        continue;
+    }
     const r = range.cloneRange();
 
     const {
@@ -55,4 +58,37 @@ for (let i = 0; i < selection.rangeCount; i++){
             targetNode.data = t;
         }
     }
+}
+
+// handle input selection
+const {
+    activeElement,
+} = document;
+if (activeElement != null && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')){
+    const {
+        selectionStart,
+        selectionEnd,
+        value,
+    } = activeElement as HTMLInputElement;
+    const v = value.substring(selectionStart, selectionEnd);
+
+    const numbers = getNumbers(v);
+    let cur = 0;
+    let result = '';
+    for (const num of numbers){
+        const {
+            position,
+            length,
+        } = num;
+        console.log(normalize(convert(num)));
+        if (cur < position){
+            result += v.substring(cur, position);
+            cur = position;
+        }
+        const t = toText(normalize(convert(num)));
+        result += t;
+        cur += length;
+    }
+    result += v.slice(cur);
+    (activeElement as any).setRangeText(result);
 }

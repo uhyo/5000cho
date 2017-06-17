@@ -14,7 +14,7 @@ export interface PositionedNumber extends PrecisionNumber{
  * Find all numbers with unit.
  */
 export function getNumbers(text: string): Array<PositionedNumber>{
-    const reg = /(\d[\d\s]*(?:\.[\s\d]+)?)\s*([京兆億万千百])?\s*([YZEPTGMkh]|da|[dcmu\u00b5npfazy])?([mgsAKLtBbJ]|mol|cd|rad|cal)?/g;
+    const reg = /(\d[\d\s]*(?:\.[\s\d]+)?)\s*([京兆億万千百])?\s*([YZEPTGMkh]|da|[dcmu\u00b5npfazy])?([mgsAKLtBbJ]|mol|cd|rad|cal|5000兆)?/g;
     let ret: RegExpExecArray | null = null;
     const result: Array<PositionedNumber> = [];
     while (ret = reg.exec(text)){
@@ -150,7 +150,7 @@ export function toText({
         return `${numstr}\u00a0${prefix}5000兆`;
     }else{
         const num2 = num * Math.pow(10, exp);
-        const numstr = num.toFixed(precision);
+        const numstr = usePrecision(num2, precision);
         return `${numstr}\u00a05000兆`;
     }
 
@@ -266,3 +266,23 @@ export function expToPrefix(exp: number): string{
     }
     return '';
 }
+
+/**
+ * 有効数字を考えた表記
+ */
+export function usePrecision(num: number, precision: number): string{
+    const offset = Math.log10(num);
+    console.log(num, offset);
+
+    if (offset < 0){
+        // 0.xyz...の形
+
+        // xyz...部分の0の長さ
+        const n = -Math.ceil(offset) - 1;
+        return num.toFixed(Math.min(20, n + precision));
+    }
+    // 小数以上の桁数
+    const n = Math.ceil(offset + Number.EPSILON);
+    return num.toFixed(Math.max(0, Math.min(20, precision - n)));
+}
+
